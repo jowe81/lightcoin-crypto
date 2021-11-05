@@ -8,7 +8,8 @@ class Transaction {
   }
 
   commit() {
-    this.account.balance += this.amount;
+    this.time = new Date();
+    this.account.addTransaction(this);
   }
 
 }
@@ -33,7 +34,25 @@ class Account {
 
   constructor(username) {
     this.username = username;
-    this.balance = 0;
+    this.transactions = [];
+  }
+
+  get balance() {
+    let b = 0;
+    for (let i = 0; i < this.transactions.length; i++) {
+      b += this.transactions[i].amount;
+    }
+    //return b;
+    console.log("REDUCING");
+    this.transactions.reduce((prev, curr) => {
+      console.log(" PREV", prev);
+      console.log(" CURR", curr);
+    });
+    return this.transactions.reduce((prev, curr) => { return { amount:prev.amount + curr.amount }; });
+  }
+
+  addTransaction(transaction) {
+    this.transactions.push(transaction);
   }
 
 }
