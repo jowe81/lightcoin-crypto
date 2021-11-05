@@ -8,8 +8,16 @@ class Transaction {
   }
 
   commit() {
-    this.time = new Date();
-    this.account.addTransaction(this);
+    if (this.isAllowed()) {
+      this.time = new Date();
+      this.account.addTransaction(this);
+      return true;
+    }
+    return false; //Declined!
+  }
+
+  isAllowed() {
+    return 1 || (this.account.balance + this.amount > 0);
   }
 
 }
@@ -38,7 +46,7 @@ class Account {
   }
 
   get balance() {
-    return this.transactions.reduce((prev, curr) => ({ amount:prev.amount + curr.amount }));
+    return this.transactions.reduce((prev, curr) => ({ amount:prev.amount + curr.amount }), { amount: 0 });
   }
 
   addTransaction(transaction) {
@@ -53,16 +61,24 @@ class Account {
 
 const myAccount = new Account("snow-patrol");
 
+let transactionCounter = 0;
+const commitAndLog = (transaction) => {
+  transactionCounter++;
+  const executed = transaction.commit() ? "approved" : "DECLINED";
+  console.log(`Transaction: ${transactionCounter}`, transaction);
+  console.log(`This transaction ${transactionCounter} was ${executed}.\n`);
+};
+
 const t1 = new Withdrawal(myAccount, 50.25);
-t1.commit();
-console.log('Transaction 1:', t1);
+commitAndLog(t1);
 
 const t2 = new Withdrawal(myAccount, 9.99);
-t2.commit();
-console.log('Transaction 2:', t2);
+commitAndLog(t2);
 
 const t3 = new Deposit(myAccount, 120);
-t3.commit();
-console.log('Transaction 3:', t3);
+commitAndLog(t3);
+
+const t4 = new Withdrawal(myAccount, 500);
+commitAndLog(t4);
 
 console.log('Balance:', myAccount.balance);
