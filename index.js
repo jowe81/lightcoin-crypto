@@ -1,5 +1,3 @@
-let balance = 500.00;
-
 class Transaction {
 
   constructor(account, amount) {
@@ -17,7 +15,8 @@ class Transaction {
   }
 
   isAllowed() {
-    return 1 || (this.account.balance + this.amount > 0);
+    console.log("Checking: ",this.account.balance, this.amount);
+    return (this.account.balance + this.amount > 0);
   }
 
 }
@@ -46,7 +45,8 @@ class Account {
   }
 
   get balance() {
-    return this.transactions.reduce((prev, curr) => ({ amount:prev.amount + curr.amount }), { amount: 0 });
+    return this.transactions
+      .reduce((prev, curr) => ({ amount:prev.amount + curr.amount }), { amount: 0 }).amount;
   }
 
   addTransaction(transaction) {
@@ -66,19 +66,14 @@ const commitAndLog = (transaction) => {
   transactionCounter++;
   const executed = transaction.commit() ? "approved" : "DECLINED";
   console.log(`Transaction: ${transactionCounter}`, transaction);
-  console.log(`This transaction ${transactionCounter} was ${executed}.\n`);
+  console.log(`This transaction was ${executed}.\n`);
 };
 
-const t1 = new Withdrawal(myAccount, 50.25);
-commitAndLog(t1);
+commitAndLog(new Deposit(myAccount, 100)); //Ok
+commitAndLog(new Withdrawal(myAccount, 50.25)); //Ok
+commitAndLog(new Withdrawal(myAccount, 9.99)); //Ok
+commitAndLog(new Deposit(myAccount, 120)); //Ok
+commitAndLog(new Withdrawal(myAccount, 500)); //Decline!
+commitAndLog(new Withdrawal(myAccount, 159)); //Ok
 
-const t2 = new Withdrawal(myAccount, 9.99);
-commitAndLog(t2);
-
-const t3 = new Deposit(myAccount, 120);
-commitAndLog(t3);
-
-const t4 = new Withdrawal(myAccount, 500);
-commitAndLog(t4);
-
-console.log('Balance:', myAccount.balance);
+console.log('Balance:', myAccount.balance.toFixed(2));
