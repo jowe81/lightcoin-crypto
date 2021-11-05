@@ -38,17 +38,7 @@ class Account {
   }
 
   get balance() {
-    let b = 0;
-    for (let i = 0; i < this.transactions.length; i++) {
-      b += this.transactions[i].amount;
-    }
-    //return b;
-    console.log("REDUCING");
-    this.transactions.reduce((prev, curr) => {
-      console.log(" PREV", prev);
-      console.log(" CURR", curr);
-    });
-    return this.transactions.reduce((prev, curr) => { return { amount:prev.amount + curr.amount }; });
+    return this.transactions.reduce((prev, curr) => ({ amount:prev.amount + curr.amount }));
   }
 
   addTransaction(transaction) {
